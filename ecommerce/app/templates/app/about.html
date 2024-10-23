@@ -1,0 +1,44 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}About{% endblock title %}
+
+{% block banner-slider %}
+<div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="{% static 'app/images/banner/b1.jpg' %}" class="d-block w-100" alt="banner image">
+      </div>
+      <div class="carousel-item">
+        <img src="{% static 'app/images/banner/b2.jpg' %}" class="d-block w-100" alt="banner image">
+      </div>
+      <div class="carousel-item">
+        <img src="{% static 'app/images/banner/b3.jpg' %}" class="d-block w-100" alt="banner image">
+      </div>
+      <div class="carousel-item">
+        <img src="{% static 'app/images/banner/b4.jpg' %}" class="d-block w-100" alt="banner image">
+      </div>
+    </div>
+</div>
+{% endblock banner-slider %}
+
+{% block main-content %}
+<div class="container mt-3">
+    <br>
+    <h2 class="text-center">About us</h2>
+    <br>
+    <div class="row container">
+        <p class="fs-4 text-center">
+            En [Nombre de la Empresa], somos una tienda en línea dedicada a ofrecer productos lácteos de la más alta calidad. Nos apasiona brindar alimentos frescos, saludables y de origen natural, siempre manteniendo los más altos estándares de producción y sostenibilidad.
+        </p>
+    </div>
+    <br>
+    <h2 class="text-center">Mission</h2>
+    <br>
+    <div class="row container">
+        <p class="fs-4 text-center">
+            Nuestra misión es ser la primera opción para los amantes de los lácteos, proporcionando una experiencia de compra conveniente, segura y confiable. Ya sea que busques productos tradicionales o nuevas opciones lácteas, estamos aquí para satisfacer tus necesidades y superar tus expectativas.
+        </p>
+    </div>
+    <br>
+</div>
+{% endblock main-content %}
