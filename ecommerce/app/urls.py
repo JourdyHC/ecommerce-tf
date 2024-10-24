@@ -38,7 +38,7 @@ urlpatterns = [
     #Carrito
     path("add-to-cart/",views.add_to_cart, name='add-to-cart'),
     path("cart/",views.show_cart, name='showcart'),
-    path("checkout/",views.show_cart, name='checkout'),
+    path("checkout/",views.checkout.as_view(), name='checkout'),
 
     #login authentication
     path('registration/', views.CustomerRegistrationView.as_view(), name='customerregistration'),
