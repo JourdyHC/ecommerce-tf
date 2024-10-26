@@ -2,31 +2,31 @@ from django.db import models
 from django.contrib.auth.models import User
 
 STATE_CHOICES = (
-    ('AMA', 'Amazonas'),
-    ('ANC', 'Áncash'),
-    ('APU', 'Apurímac'),
-    ('ARE', 'Arequipa'),
-    ('AYA', 'Ayacucho'),
-    ('CAJ', 'Cajamarca'),
-    ('CAL', 'Callao'),
-    ('CUS', 'Cusco'),
-    ('HUV', 'Huancavelica'),
-    ('HUA', 'Huánuco'),
-    ('ICA', 'Ica'),
-    ('JUN', 'Junín'),
-    ('LAL', 'La Libertad'),
-    ('LAM', 'Lambayeque'),
-    ('LIM', 'Lima'),
-    ('LOR', 'Loreto'),
-    ('MDD', 'Madre de Dios'),
-    ('MOQ', 'Moquegua'),
-    ('PAS', 'Pasco'),
-    ('PIU', 'Piura'),
-    ('PUN', 'Puno'),
-    ('SAM', 'San Martín'),
-    ('TAC', 'Tacna'),
-    ('TUM', 'Tumbes'),
-    ('UCA', 'Ucayali')
+    ('Amazonas'     , 'Amazonas'),
+    ('Áncash'       , 'Áncash'),
+    ('Apurímac'     , 'Apurímac'),
+    ('Arequipa'     , 'Arequipa'),
+    ('Ayacucho'     , 'Ayacucho'),
+    ('Cajamarca'    , 'Cajamarca'),
+    ('Callao'       , 'Callao'),
+    ('Cusco'        , 'Cusco'),
+    ('Huancavelica' , 'Huancavelica'),
+    ('Huánuco'      , 'Huánuco'),
+    ('Ica'          , 'Ica'),
+    ('Junín'        , 'Junín'),
+    ('La Libertad'  , 'La Libertad'),
+    ('Lambayeque'   , 'Lambayeque'),
+    ('Lima'         , 'Lima'),
+    ('Loreto'       , 'Loreto'),
+    ('Madre de Dios', 'Madre de Dios'),
+    ('Moquegua'     , 'Moquegua'),
+    ('Pasco'        , 'Pasco'),
+    ('Piura'        , 'Piura'),
+    ('Puno'         , 'Puno'),
+    ('San Martín'   , 'San Martín'),
+    ('Tacna'        , 'Tacna'),
+    ('Tumbes'       , 'Tumbes'),
+    ('Ucayali'      , 'Ucayali')
 )
 
 # Create your models here.
@@ -42,6 +42,14 @@ CATEGORY_CHOICES = (
     ("IC", "Ice-Creams")
 )
 
+STATUS_CHOICES = (
+    ('Accepted','Accepted'),
+    ('Packed','Packed'),
+    ('On The Way','On The Way'),
+    ('Delivered','Delivered'),
+    ('Cancel','Cancel'),
+    ('Pending','Pending'),
+    )
 
 class Product(models.Model):
     title = models.CharField(max_length=100)
@@ -53,6 +61,14 @@ class Product(models.Model):
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=2)
     product_image = models.ImageField(upload_to="product")
 
+    def __str__(self) -> str:
+        return self.title
+
+class Category(models.Model):
+    title = models.CharField(max_length=100)
+    slug = models.CharField(max_length=3),
+    description = models.TextField(),
+    image = models.ImageField(upload_to="category"),
     def __str__(self) -> str:
         return self.title
 
@@ -76,3 +92,14 @@ class Cart(models.Model):
     @property
     def total_cost(self):
         return self.quantity * self.Product.discounted_price
+    
+class OrderPlaced(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    ordered_date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending')
+    @property
+    def total_cost(self):
+        return self.quantity * self.product.discounted_price

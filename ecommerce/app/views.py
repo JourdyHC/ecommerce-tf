@@ -2,7 +2,7 @@ from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views import View
-from .models import Cart, Customer, Product
+from .models import Cart, Customer, OrderPlaced, Product
 from .forms import CustomerProfileForm, CustomerRegitrationForm
 from django.contrib import messages
 
@@ -11,7 +11,7 @@ def home(request):
     return render(request, "app/home.html")
 
 def about(request):
-    return render(request, "app/about.html")
+    return render(request, "app/about.html", locals())
 
 def contact(request):
     return render(request, "app/contact.html")
@@ -21,6 +21,13 @@ class CategoryView(View):
         product = Product.objects.filter(category = val)
         title = Product.objects.filter(category=val).values('title')
         return render(request, "app/category.html", locals())
+    
+def login_success(request):
+    user = request.user
+    if(Customer.objects.filter(user=user).exists()):
+        return redirect('home')
+    else:
+        return redirect('profile')
 
 class CategoryTitle(View):
     def get(self, request, val):
@@ -45,7 +52,7 @@ class CustomerRegistrationView(View):
             messages.success(request,"Congratulations! User Register Successfully")
         else:
             messages.warning(request,"Error! invalid imput data")
-        return render(request, "app/customerregistration.html",locals())
+        return redirect("accounts/login")
 
 class ProfileView(View):
     def get(self, request):
@@ -136,8 +143,29 @@ class checkout(View):
     def get(self, request):
         user = request.user
         add = Customer.objects.filter(user=user)
+        cart_items = Cart.objects.filter(user=user)
+        amount = getAmount(user)
+        totalamount = (amount + 40)
         return render(request, 'app/checkout.html',locals())
-
+    
+    def post(self, request):
+        user = request.user
+        cart_items = add = Cart.objects.filter(user=user)
+        ##Crear orden
+        for item in cart_items:
+            OrderPlaced.objects.create(
+                user=user, 
+                customer=Customer.objects.get(user=user), 
+                product=item.product,
+                quantity=item.quantity,
+                )
+        #Eliminar objetos del carrito de compras
+        cart_items.delete()
+        return redirect('orders')
+    
+def orders(request):
+    order_placed = OrderPlaced.objects.filter(user=request.user)
+    return render(request,'app/orders.html',locals())
 
 def plus_cart(request):
     if (request.method == 'GET'):
@@ -182,6 +210,11 @@ def remove_cart(request):
             'totalamount': "S/. %.2f" % (amount+40),
         }
         return JsonResponse(data)
+    
+def search(request):
+    query = request.GET['search']
+    products = Product.objects.filter(Q(title__icontains=query))
+    return render(request,'app/search.html',locals())
 
 ##Utils    
 def getAmount(user):

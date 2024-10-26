@@ -25,7 +25,7 @@ from .forms import LoginForm, MyPasswordResetForm, MyPasswordChangeForm
 
 urlpatterns = [
     
-    path("", views.home),
+    path("", views.home, name='home'),
     path("about", views.about, name="about"),
     path("contact", views.contact, name='contact'),
     path("category/<slug:val>",views.CategoryView.as_view(), name="category"),
@@ -39,10 +39,14 @@ urlpatterns = [
     path("add-to-cart/",views.add_to_cart, name='add-to-cart'),
     path("cart/",views.show_cart, name='showcart'),
     path("checkout/",views.checkout.as_view(), name='checkout'),
+    path("orders/",views.orders, name='orders'),
+
+    path("search/", views.search, name='search'),
 
     #login authentication
     path('registration/', views.CustomerRegistrationView.as_view(), name='customerregistration'),
     path('accounts/login/', auth_view.LoginView.as_view(template_name='app/login.html',authentication_form=LoginForm), name='login'),
+    path('login_success/', views.login_success, name='login_success'),
     path('passwword-reset/', auth_view.PasswordResetView.as_view(template_name='app/password_reset.html',form_class=MyPasswordResetForm),name='password_reset'),
     path('passwordchange/', auth_view.PasswordChangeView.as_view(template_name='app/changepassword.html',form_class=MyPasswordChangeForm,success_url='/passwordchangedone'),name='passwordchange'),
     path('passwordchangedone/', auth_view.PasswordChangeView.as_view(template_name='app/passwordchangedone.html'), name='passwordchangedone'),
