@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
@@ -52,7 +53,7 @@ class CustomerRegistrationView(View):
             messages.success(request,"Congratulations! User Register Successfully")
         else:
             messages.warning(request,"Error! invalid imput data")
-        return redirect("accounts/login")
+        return redirect("login")
 
 class ProfileView(View):
     def get(self, request):
@@ -91,10 +92,10 @@ class ProfileView(View):
             # reg.save()
 
             messages.success(request, "Congratultions! profile Save Successfully")
+            return redirect('home')
         else:
             messages.warning(request, "Invalid data input")
-
-        return render(request, 'app/profile.html',locals())
+            return render(request, 'app/profile.html',locals())
     
 def address(request):
     address = Customer.objects.filter(user=request.user)
@@ -123,11 +124,14 @@ class UpdateAddress(View):
         return render(request, 'app/updateAddress.html', locals())
 
 def add_to_cart(request):
-    user = request.user
-    product_id = request.GET.get('prod_id')
-    product = Product.objects.get(id=product_id)
-    Cart(user=user, product = product).save()
-    return redirect("/cart")
+    if request.user.is_authenticated:
+        user = request.user
+        product_id = request.GET.get('prod_id')
+        product = Product.objects.get(id=product_id)
+        Cart(user=user, product = product).save()
+        return redirect("/cart")
+    else:
+        return redirect("login")
 
 def show_cart(request):
     user = request.user
@@ -150,18 +154,28 @@ class checkout(View):
     
     def post(self, request):
         user = request.user
-        cart_items = add = Cart.objects.filter(user=user)
-        ##Crear orden
-        for item in cart_items:
-            OrderPlaced.objects.create(
-                user=user, 
-                customer=Customer.objects.get(user=user), 
-                product=item.product,
-                quantity=item.quantity,
-                )
-        #Eliminar objetos del carrito de compras
-        cart_items.delete()
-        return redirect('orders')
+        customer = Customer.objects.get(user=user)
+        add = Customer.objects.filter(user=user)
+        amount = getAmount(user)
+        cart_items = Cart.objects.filter(user=user)
+        totalamount = amount + 40
+        if (customer.credits > totalamount):
+            ##Crear orden
+            for item in cart_items:
+                OrderPlaced.objects.create(
+                    user=user, 
+                    customer=Customer.objects.get(user=user), 
+                    product=item.product,
+                    quantity=item.quantity,
+                    )
+            #Eliminar objetos del carrito de compras
+            cart_items.delete()
+            customer.credits -= Decimal(totalamount)
+            customer.save()
+            return redirect('orders')
+        else:
+            messages.warning(request,"Créditos insuficientes")
+            return render(request, 'app/checkout.html',locals())
     
 def orders(request):
     order_placed = OrderPlaced.objects.filter(user=request.user)
