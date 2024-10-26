@@ -8,7 +8,11 @@ def navBarData(request):
     categories = Category.objects.all()
     if request.user.is_authenticated:
         totalitem = Cart.objects.filter(user=request.user).count()
-        credits = Customer.objects.get(user=request.user).credits
+        try:
+            credits = Customer.objects.get(user=request.user).credits
+        except:
+            credits = 0
+            
     return {
         'totalitem':totalitem,
         'categories':categories,
