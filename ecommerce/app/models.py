@@ -51,6 +51,14 @@ STATUS_CHOICES = (
     ('Pending','Pending'),
     )
 
+class Category(models.Model):
+    title = models.CharField(max_length=100)
+    slug = models.CharField(max_length=3)
+    description = models.TextField(null=True)
+    category_image = models.ImageField(upload_to="category")
+    def __str__(self) -> str:
+        return self.title
+    
 class Product(models.Model):
     title = models.CharField(max_length=100)
     selling_price = models.FloatField()
@@ -58,19 +66,14 @@ class Product(models.Model):
     description = models.TextField()
     composition = models.TextField(default="")
     prodapp = models.TextField(default="")
-    category = models.CharField(choices=CATEGORY_CHOICES, max_length=2)
+    #category = models.CharField(choices=CATEGORY_CHOICES, max_length=2)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    author = models.CharField(max_length=100, null=True)
     product_image = models.ImageField(upload_to="product")
 
     def __str__(self) -> str:
         return self.title
 
-class Category(models.Model):
-    title = models.CharField(max_length=100)
-    slug = models.CharField(max_length=3),
-    description = models.TextField(),
-    image = models.ImageField(upload_to="category"),
-    def __str__(self) -> str:
-        return self.title
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -80,6 +83,7 @@ class Customer(models.Model):
     mobile = models.IntegerField(default=0)
     zipcode = models.IntegerField()
     state = models.CharField(choices=STATE_CHOICES, max_length=100)
+    credits = models.DecimalField(max_digits=10, decimal_places=2, default=1000)
 
     def __str__(self):
         return self.name

@@ -18,8 +18,8 @@ def contact(request):
 
 class CategoryView(View):
     def get(self, request, val):
-        product = Product.objects.filter(category = val)
-        title = Product.objects.filter(category=val).values('title')
+        product = Product.objects.filter(category__slug = val)
+        title = Product.objects.filter(category__slug=val).values('title')
         return render(request, "app/category.html", locals())
     
 def login_success(request):

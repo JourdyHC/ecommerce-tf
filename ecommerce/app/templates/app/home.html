@@ -23,7 +23,7 @@
 
 {% block information %}
 <div class="container">
-    <div class="row bg-success text-center p-5 text-white border-bottom shadow">
+    <div class="row bg-main text-center p-5 text-white border-bottom shadow">
         <h1>Products</h1>
         <small class="fs-5">
             Dodla ofrece una amplia gama de productos en las categorías de leche líquida y subproductos. La leche líquida comprende 5 tipos de variantes y los subproductos comprenden 14 tipos de variantes. Dodla ofrece una amplia gama de productos lácteos que comprende leche fresca, mantequilla, ghee, paneer, cuajada, leche saborizada, doodh peda, helado y leche desnatada en polvo.
@@ -39,7 +39,20 @@
 
         <div class="row container">
 
-            <div class="col-md-4 col-sm-4 mi-go wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.6s" style="animation-duration: 1s; animation-delay: 0.6s; animation-name: none;">
+            {% for category in categories %}
+            <div class="col-md-4 col-sm-4 mi-go wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.6s" style="animation-duration:1s; animation-delay:0.6s; animation-name: none;">
+                <div class="goodnesssec buttermilk curdbgpro">
+                    <a href="{% url 'category' category.slug %}">
+                        <div class="goodnessseccont text-center">
+                            <img src={{category.category_image.url}} class="img-responsive center-block" alt="">
+                            <p class="mlkpro">{{category.title}}</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% comment %} <div class="col-md-4 col-sm-4 mi-go wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.6s" style="animation-duration: 1s; animation-delay: 0.6s; animation-name: none;">
                 <div class="goodnesssec buttermilk smbg">
                     <a href="{% url 'category' 'GH' %}">
                         <div class="goodnessseccont text-center">
@@ -70,11 +83,11 @@
                         </div>
                     </a>
                 </div>
-            </div>
+            </div> {% endcomment %}
             
         </div>
 
-        <br>
+        {% comment %} <br>
 
         <div class="row container">
 
@@ -109,7 +122,7 @@
                         </div>
                     </a>
                 </div>
-            </div>
+            </div> {% endcomment %}
             
         </div>
 
